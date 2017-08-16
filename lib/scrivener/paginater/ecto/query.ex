@@ -6,7 +6,9 @@ defimpl Scrivener.Paginater, for: Ecto.Query do
   @moduledoc false
 
   @spec paginate(Ecto.Query.t, Scrivener.Config.t) :: Scrivener.Page.t
-  def paginate(query, %Config{page_size: page_size, page_number: page_number, module: repo, caller: caller}) do
+  def paginate(query, %Config{page_size: page_size, page_number: page_number, module: repo, caller: caller, foo: foo}) do
+    require Logger
+    Logger.warn(foo)
     total_entries = total_entries(query, repo, caller)
 
     %Page{
@@ -28,17 +30,16 @@ defimpl Scrivener.Paginater, for: Ecto.Query do
   end
 
   defp total_entries(query, repo, caller) do
-  #   total_entries =
-  #     query
-  #     |> exclude(:preload)
-  #     |> exclude(:select)
-  #     |> exclude(:order_by)
-  #     |> subquery
-  #     |> select(count("*"))
-  #     |> repo.one(caller: caller)
-  #
-  #   total_entries || 0
-    5
+    total_entries =
+      query
+      |> exclude(:preload)
+      |> exclude(:select)
+      |> exclude(:order_by)
+      |> subquery
+      |> select(count("*"))
+      |> repo.one(caller: caller)
+  
+    total_entries || 0
   end
 
   defp total_pages(0, _), do: 1
